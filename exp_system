@@ -1,58 +1,40 @@
+STDIN-
+tulsi.
+[powdery_substance, leaf_spots].
+[high_humidity].
+
+:- dynamic(has_symptom/2).
+:- dynamic(has_environment/2).
 :- initialization(main).
 
-% Symptoms 
-symptom(leaf_spots). 
-symptom(yellow_leaves). 
-symptom(wilting). 
-symptom(powdery_substance). 
-symptom(leaf_curling). 
-
-% Environmental Conditions 
-environment(high_humidity). 
-environment(poor_airflow). 
-environment(overwatering). 
-
-% Knowledge Base
-has_symptom(tulsi, powdery_substance). 
-has_symptom(tulsi, leaf_spots). 
-has_symptom(rose, wilting). 
-has_symptom(rose, yellow_leaves). 
-has_symptom(mango, leaf_curling). 
-has_symptom(mango, yellow_leaves). 
-has_symptom(basil, leaf_spots). 
-has_symptom(basil, yellow_leaves). 
-has_environment(tulsi, high_humidity). 
-has_environment(rose, overwatering). 
-has_environment(basil, poor_airflow). 
-
-% Disease Rules 
+% Disease rules
 at_risk_of_fungal_disease(Plant) :- 
-    has_symptom(Plant, powdery_substance), 
-    has_symptom(Plant, leaf_spots), 
-    has_environment(Plant, high_humidity). 
+    has_symptom(Plant, powdery_substance),
+    has_symptom(Plant, leaf_spots),
+    has_environment(Plant, high_humidity).
 
 at_risk_of_bacterial_disease(Plant) :- 
-    has_symptom(Plant, wilting), 
-    has_symptom(Plant, yellow_leaves), 
-    has_environment(Plant, overwatering). 
+    has_symptom(Plant, wilting),
+    has_symptom(Plant, yellow_leaves),
+    has_environment(Plant, overwatering).
 
 at_risk_of_viral_disease(Plant) :- 
-    has_symptom(Plant, leaf_curling), 
-    has_symptom(Plant, yellow_leaves), 
-    \+ has_environment(Plant, overwatering). 
+    has_symptom(Plant, leaf_curling),
+    has_symptom(Plant, yellow_leaves),
+    \+ has_environment(Plant, overwatering).
 
-% Diagnostic Predicate 
+% Diagnosis logic
 check_plant_disease(Plant) :- 
     at_risk_of_fungal_disease(Plant), 
-    write(Plant), write(' is at risk of fungal disease.'), nl. 
+    write(Plant), write(' is at risk of fungal disease.'), nl.
 
 check_plant_disease(Plant) :- 
     at_risk_of_bacterial_disease(Plant), 
-    write(Plant), write(' is at risk of bacterial disease.'), nl. 
+    write(Plant), write(' is at risk of bacterial disease.'), nl.
 
 check_plant_disease(Plant) :- 
     at_risk_of_viral_disease(Plant), 
-    write(Plant), write(' is at risk of viral disease.'), nl. 
+    write(Plant), write(' is at risk of viral disease.'), nl.
 
 check_plant_disease(Plant) :- 
     \+ at_risk_of_fungal_disease(Plant), 
@@ -60,8 +42,25 @@ check_plant_disease(Plant) :-
     \+ at_risk_of_viral_disease(Plant), 
     write(Plant), write(' shows no sign of serious disease.'), nl.
 
-main :- 
-    check_plant_disease(tulsi), 
-    check_plant_disease(rose), 
-    check_plant_disease(mango), 
-    check_plant_disease(basil).
+% Main
+main :-
+    read(Plant),
+    
+    read(Symptoms),
+    assert_symptoms(Plant, Symptoms),
+
+    read(EnvConds),
+    assert_environments(Plant, EnvConds),
+
+    check_plant_disease(Plant).
+
+% Helpers to assert facts dynamically
+assert_symptoms(_, []).
+assert_symptoms(Plant, [H|T]) :-
+    assertz(has_symptom(Plant, H)),
+    assert_symptoms(Plant, T).
+
+assert_environments(_, []).
+assert_environments(Plant, [H|T]) :-
+    assertz(has_environment(Plant, H)),
+    assert_environments(Plant, T).
