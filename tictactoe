@@ -1,0 +1,177 @@
+#include<stdio.h>
+#include<stdlib.h>
+#define PLAYER 'X'
+#define AI 'O'
+char board[3][3];
+
+void initializeBoard() {
+    for(int i = 0; i < 3; i++) {
+        for(int j = 0; j < 3; j++) {
+            board[i][j] = ' ';
+        }
+    }
+}
+
+int isBoardFull() {
+    for(int i = 0; i < 3; i++) {
+        for(int j = 0; j < 3; j++) {
+            if(board[i][j] == ' ') {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+void printBoard() { 
+    printf("\n"); 
+    printf(" %c | %c | %c \n", board[0][0], board[0][1], board[0][2]); 
+    printf("---|---|---\n"); 
+    printf(" %c | %c | %c \n", board[1][0], board[1][1], board[1][2]); 
+    printf("---|---|---\n"); 
+    printf(" %c | %c | %c \n\n", board[2][0], board[2][1], board[2][2]); 
+} 
+
+char checkWinner(){
+    for (int i = 0; i < 3; i++) { 
+        if (board[i][0] == board[i][1] && 
+            board[i][1] == board[i][2] && 
+            board[i][0] != ' ') 
+            return board[i][0]; 
+        if (board[0][i] == board[1][i] && 
+            board[1][i] == board[2][i] && 
+            board[0][i] != ' ') 
+            return board[0][i]; 
+    } 
+    if (board[0][0] == board[1][1] && 
+        board[1][1] == board[2][2] && 
+        board[0][0] != ' ') 
+        return board[0][0]; 
+    if (board[0][2] == board[1][1] && 
+        board[1][1] == board[2][0] && 
+        board[0][2] != ' ') 
+        return board[0][2]; 
+    return ' '; 
+}
+
+void playPvPGame() {
+    int row, col; 
+    char currentPlayer = PLAYER; 
+    char winner; 
+    initializeBoard(); 
+    printBoard();
+    while (1) {
+        printf("Player %c's turn. Enter row and column (0-2): ", currentPlayer); 
+        scanf("%d %d", &row, &col); 
+        if (row < 0 || row > 2 || col < 0 || col > 2 || board[row][col] != ' ') { 
+            printf("Invalid move! Try again.\n"); 
+            continue; 
+        } 
+        board[row][col] = currentPlayer; 
+        printBoard(); 
+        winner = checkWinner(); 
+        if (winner != ' ') { 
+            printf("Player %c wins!\n", winner); 
+            break; 
+        } 
+        if (isBoardFull()) { 
+            printf("It's a draw!\n"); 
+            break; 
+        } 
+        currentPlayer = (currentPlayer == PLAYER) ? AI : PLAYER; 
+    } 
+}
+
+int minimax(int depth, int isMaximizing) { 
+    char winner = checkWinner(); 
+    if (winner == AI) return 10 - depth;  
+    if (winner == PLAYER) return depth - 10; 
+    if (isBoardFull()) return 0; 
+    int bestScore = isMaximizing ? -1000 : 1000; 
+    for (int i = 0; i < 3; i++) { 
+        for (int j = 0; j < 3; j++) { 
+            if (board[i][j] == ' ') { 
+                board[i][j] = isMaximizing ? AI : PLAYER; 
+                int score = minimax(depth + 1, !isMaximizing); 
+                board[i][j] = ' '; 
+                bestScore = isMaximizing 
+                    ? (score > bestScore ? score : bestScore) 
+                    : (score < bestScore ? score : bestScore); 
+            } 
+        } 
+    } 
+    return bestScore; 
+} 
+void aiMove() { 
+    int bestScore = -1000, bestRow = -1, bestCol = -1; 
+    for (int i = 0; i < 3; i++) { 
+        for (int j = 0; j < 3; j++) { 
+            if (board[i][j] == ' ') { 
+                board[i][j] = AI; 
+                int score = minimax(0, 0); 
+                board[i][j] = ' '; 
+                if (score > bestScore) { 
+                    bestScore = score; 
+                    bestRow = i; 
+                    bestCol = j; 
+                } 
+            } 
+        } 
+    } 
+    board[bestRow][bestCol] = AI; 
+} 
+int playerMove() { 
+    int row, col;
+    int attempts = 5;
+    while (attempts--) { 
+        printf("Enter your move (row and column: 0 1 2): "); 
+        if (scanf("%d %d", &row, &col) != 2) {
+            printf("Invalid input! Expected two integers.\n");
+            while (getchar() != '\n');
+            continue;
+        }
+        if (row >= 0 && row < 3 && col >= 0 && col < 3 && board[row][col] == ' ') { 
+            board[row][col] = PLAYER; 
+            return 1; 
+        } else { 
+            printf("Invalid move! Try again.\n"); 
+        } 
+    } 
+    printf("Too many invalid attempts. Exiting game.\n");
+    return 0;
+}
+
+void playAIGame() { 
+    char winner; 
+    initializeBoard(); 
+    printBoard(); 
+    while (1) { 
+        playerMove(); 
+        printBoard(); 
+        winner = checkWinner(); 
+        if (winner == PLAYER) { 
+            printf("You win!\n"); 
+            break; 
+        } 
+        if (isBoardFull()) { 
+            printf("It's a draw!\n"); 
+            break; 
+        } 
+        printf("AI is thinking...\n"); 
+        aiMove(); 
+        printBoard(); 
+        winner = checkWinner(); 
+        if (winner == AI) { 
+            printf("AI wins!\n"); 
+            break; 
+        } 
+        if (isBoardFull()) { 
+            printf("It's a draw!\n"); 
+            break; 
+        } 
+    } 
+} 
+int main() { 
+        //playPvPGame();
+        playAIGame(); 
+    return 0; 
+} 
