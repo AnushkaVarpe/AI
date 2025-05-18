@@ -1,0 +1,85 @@
+#include <stdio.h>
+#define MAX 20
+
+// Function to display one valid board configuration
+void display(int board[MAX][MAX], int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (board[i][j] == 1)
+                printf("Q ");
+            else
+                printf("_ ");
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+// Function to check if a queen can be placed at board[row][col]
+int isSafe(int board[MAX][MAX], int row, int col, int n) {
+    int i, j;
+
+    // Check column above
+    for (i = 0; i < row; i++) {
+        if (board[i][col] == 1)
+            return 0;
+    }
+
+    // Check upper-left diagonal
+    for (i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
+        if (board[i][j] == 1)
+            return 0;
+    }
+
+    // Check upper-right diagonal
+    for (i = row - 1, j = col + 1; i >= 0 && j < n; i--, j++) {
+        if (board[i][j] == 1)
+            return 0;
+    }
+
+    return 1;
+}
+
+// Recursive function to solve N-Queens
+int solution(int board[MAX][MAX], int row, int n) {
+    int count = 0;
+
+    if (row == n) {
+        display(board, n);
+        return 1;
+    }
+
+    for (int col = 0; col < n; col++) {
+        if (isSafe(board, row, col, n)) {
+            board[row][col] = 1;
+            count += solution(board, row + 1, n);
+            board[row][col] = 0; // backtrack
+        }
+    }
+
+    return count;
+}
+
+int main() {
+    int board[MAX][MAX], n, totalSolutions;
+
+    printf("Enter the value of N (size of the board): ");
+    scanf("%d", &n);
+
+    if (n <= 0 || n > MAX) {
+        printf("Invalid value of N. Please enter a value between 1 and %d.\n", MAX);
+        return 1;
+    }
+
+    // Initialize the board with 0
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            board[i][j] = 0;
+        }
+    }
+    printf("\n");
+    totalSolutions = solution(board, 0, n);
+    printf("Total possible solutions for %d-Queens: %d\n", n, totalSolutions);
+
+    return 0;
+}
