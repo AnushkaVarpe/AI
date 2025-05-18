@@ -1,0 +1,342 @@
+1. STDIN: [has_fur, eats_meat, has_stripes].
+:- initialization(main).
+
+% Features
+feature(has_fur).
+feature(eats_meat).
+feature(has_stripes).
+feature(has_mane).
+feature(has_long_neck).
+feature(has_long_legs).
+feature(has_spots).
+feature(has_feathers).
+feature(can_fly).
+feature(cannot_fly).
+feature(swims).
+feature(black_and_white).
+feature(has_gills).
+feature(has_scales).
+
+% Classification Facts
+has_feature(tiger, has_fur).
+has_feature(tiger, eats_meat).
+has_feature(tiger, has_stripes).
+
+has_feature(lion, has_fur).
+has_feature(lion, eats_meat).
+has_feature(lion, has_mane).
+
+has_feature(giraffe, has_fur).
+has_feature(giraffe, has_long_neck).
+has_feature(giraffe, has_long_legs).
+has_feature(giraffe, has_spots).
+
+has_feature(penguin, has_feathers).
+has_feature(penguin, cannot_fly).
+has_feature(penguin, swims).
+has_feature(penguin, black_and_white).
+
+has_feature(eagle, has_feathers).
+has_feature(eagle, can_fly).
+has_feature(eagle, eats_meat).
+
+has_feature(shark, has_gills).
+has_feature(shark, swims).
+has_feature(shark, has_scales).
+has_feature(shark, eats_meat).
+
+% Classification Rules
+is_mammal(Animal) :-
+    has_feature(Animal, has_fur).
+
+is_bird(Animal) :-
+    has_feature(Animal, has_feathers).
+
+is_fish(Animal) :-
+    has_feature(Animal, has_gills),
+    has_feature(Animal, has_scales).
+
+is_tiger(Animal) :-
+    has_feature(Animal, has_stripes),
+    has_feature(Animal, eats_meat),
+    is_mammal(Animal).
+
+is_lion(Animal) :-
+    has_feature(Animal, has_mane),
+    has_feature(Animal, eats_meat),
+    is_mammal(Animal).
+
+is_giraffe(Animal) :-
+    has_feature(Animal, has_long_neck),
+    has_feature(Animal, has_long_legs),
+    has_feature(Animal, has_spots),
+    is_mammal(Animal).
+
+is_penguin(Animal) :-
+    has_feature(Animal, cannot_fly),
+    has_feature(Animal, swims),
+    has_feature(Animal, black_and_white),
+    is_bird(Animal).
+
+is_eagle(Animal) :-
+    has_feature(Animal, can_fly),
+    has_feature(Animal, eats_meat),
+    is_bird(Animal).
+
+is_shark(Animal) :-
+    has_feature(Animal, swims),
+    has_feature(Animal, eats_meat),
+    is_fish(Animal).
+
+% Diagnosis Predicate
+identify_animal(Animal) :-
+    is_tiger(Animal),
+    write(Animal), write(' is a Tiger.'), nl.
+
+identify_animal(Animal) :-
+    is_lion(Animal),
+    write(Animal), write(' is a Lion.'), nl.
+
+identify_animal(Animal) :-
+    is_giraffe(Animal),
+    write(Animal), write(' is a Giraffe.'), nl.
+
+identify_animal(Animal) :-
+    is_penguin(Animal),
+    write(Animal), write(' is a Penguin.'), nl.
+
+identify_animal(Animal) :-
+    is_eagle(Animal),
+    write(Animal), write(' is an Eagle.'), nl.
+
+identify_animal(Animal) :-
+    is_shark(Animal),
+    write(Animal), write(' is a Shark.'), nl.
+
+identify_animal(Animal) :-
+    write(Animal), write(' does not match any known animal.'), nl.
+
+% Main Entry Point
+main :-
+    identify_animal(tiger),
+    identify_animal(lion),
+    identify_animal(giraffe),
+    identify_animal(penguin),
+    identify_animal(eagle),
+    identify_animal(shark),
+    identify_animal(cat).  % This will match the fallback.
+
+
+2. STDIN: [coding, problem_solving, technology].
+% Helper predicate: Find intersection of two lists
+intersection([], _, []).
+intersection([H|T], List2, [H|Result]) :-
+    member(H, List2),  % Check if H is in List2
+    intersection(T, List2, Result).
+intersection([_|T], List2, Result) :-
+    intersection(T, List2, Result).
+
+% Knowledge Base
+
+% Career paths based on interests and skills
+career(sports, "Professional Athlete or Sports Coach").
+career(arts, "Graphic Designer or Fine Artist").
+career(technology, "Software Developer or Data Scientist").
+career(healthcare, "Doctor or Nurse").
+career(business, "Entrepreneur or Business Analyst").
+career(law, "Lawyer or Legal Consultant").
+career(science, "Research Scientist or Lab Technician").
+career(education, "Teacher or Educational Consultant").
+career(writing, "Author or Content Writer").
+career(music, "Musician or Music Producer").
+career(engineering, "Mechanical, Civil, or Software Engineer").
+career(higher_studies, "Researcher or Academician pursuing advanced degrees").
+career(dance, "Choreographer or Dance Instructor").
+
+
+% Matching interests to categories
+interest_category([sports, fitness], sports).
+interest_category([drawing, painting, design], arts).
+interest_category([coding, technology, problem_solving], technology).
+interest_category([medicine, helping_others, biology], healthcare).
+interest_category([management, leadership, finance], business).
+interest_category([justice, debating, critical_thinking], law).
+interest_category([experiments, curiosity, research], science).
+interest_category([teaching, mentoring, learning], education).
+interest_category([writing, reading, storytelling], writing).
+interest_category([music, singing, composing], music).
+interest_category([engineering, machines, innovation], engineering).
+interest_category([studies, research, academia, knowledge], higher_studies).
+interest_category([dancing,choreography], dance).
+
+% Main Predicate
+career_guidance :-
+    write('Welcome to the Career Guidance System!'), nl,
+    write('Please list your interests as a Prolog list, e.g., [coding, painting, fitness]: '), nl,
+    read(Interests),
+    (   find_career(Interests, Career)
+    ->  format('Based on your interests, a potential career path could be: ~s~n', [Career])
+    ;   write('Sorry, we could not determine a suitable career for your interests.'), nl
+    ).
+
+% Helper Predicate: Find the career based on interests
+find_career(Interests, Career) :-
+    interest_category(InterestList, Category),
+    intersection(Interests, InterestList, Matches),
+    Matches \= [],  % Ensure there is at least one match
+    career(Category, Career).
+
+% Entry point
+start :-
+    career_guidance.
+
+% Initialization directive
+:- initialization(start).
+
+3. 
+STDIN:
+30000.
+employed.
+700.
+10000.
+home_loan.
+200000.
+240.
+% Facts: Define thresholds for approval criteria
+minimum_income(30000). % Minimum annual income in dollars
+minimum_credit_score(650). % Minimum credit score
+maximum_debt_to_income_ratio(0.4). % Maximum debt-to-income ratio
+
+% Loan types and interest rates
+interest_rate(home_loan, 6.5). % Home loan interest rate in percentage
+interest_rate(car_loan, 8.5).  % Car loan interest rate in percentage
+
+% Rules: Determine loan eligibility
+eligible_income(Income) :-
+    minimum_income(MinIncome),
+    Income >= MinIncome.
+
+eligible_credit_score(CreditScore) :-
+    minimum_credit_score(MinCreditScore),
+    CreditScore >= MinCreditScore.
+
+eligible_debt_to_income(Income, Debt) :-
+    DebtToIncome is Debt / Income,
+    maximum_debt_to_income_ratio(MaxRatio),
+    DebtToIncome =< MaxRatio.
+
+loan_approved(Income, EmploymentStatus, CreditScore, Debt) :-
+    eligible_income(Income),
+    eligible_credit_score(CreditScore),
+    eligible_debt_to_income(Income, Debt),
+    EmploymentStatus = employed. % Must be employed
+
+% EMI calculation: EMI = [P × R × (1 + R)^N] / [(1 + R)^N - 1]
+calculate_emi(LoanAmount, Rate, Tenure, EMI) :-
+    MonthlyRate is Rate / (12 * 100), % Convert annual interest rate to monthly
+    PowerFactor is (1 + MonthlyRate) ** Tenure,
+    EMI is LoanAmount * MonthlyRate * PowerFactor / (PowerFactor - 1).
+
+% Ask questions and give a recommendation
+start :-
+    write('Welcome to the Bank Loan Approval System!'), nl,
+    write('Please answer the following questions.'), nl,
+    write('Enter your annual income: '), read(Income),
+    write('Enter your employment status (employed/unemployed): '), read(EmploymentStatus),
+    write('Enter your credit score: '), read(CreditScore),
+    write('Enter your total debt amount: '), read(Debt),
+    (loan_approved(Income, EmploymentStatus, CreditScore, Debt) ->
+        (write('Congratulations! Your loan application is approved.'), nl,
+         write('Please select the type of loan (home_loan/car_loan): '), read(LoanType),
+         interest_rate(LoanType, Rate),
+         write('Enter the loan amount: '), read(LoanAmount),
+         write('Enter the loan tenure (in months): '), read(Tenure),
+         calculate_emi(LoanAmount, Rate, Tenure, EMI),
+         format('Your EMI for the ~w is: $~2f per month.', [LoanType, EMI]), nl);
+        (write('We are sorry, but your loan application is not approved.'), nl)).
+
+% Initialization directive to run the start goal
+:- initialization(start).
+
+
+4.
+:- initialization(main).
+
+% Facts
+disease(flu, [cold, cough, dizziness, fever, headache, age(0-100), gender(any), weight(10-120), height(50-200), medical_history(none), lifestyle([non_smoker, smoker, junk_food, sedentary]), travel_history(hiking), diet([junk_food, unbalanced]), bp(90-120), heart_rate(60-100), cholesterol(150-200), blood_sugar(70-140), oxygen_saturation(95-100)]).
+disease(dengue, [fever, low_platelet, age(0-100), gender(any), weight(10-120), height(50-200), medical_history(none), lifestyle([non_smoker, smoker]), travel_history(tropical), diet([balanced, unbalanced]), bp(90-120), heart_rate(60-100), cholesterol(150-200), blood_sugar(70-140), oxygen_saturation(95-100)]).
+disease(measles, [rash, fever, cough, conjunctivitis, runny_nose, age(0-100), gender(any), weight(10-120), height(50-200), medical_history(none), lifestyle([shared_clothes, non_smoker]), travel_history(none), diet([balanced, unbalanced]), bp(90-120), heart_rate(60-100), cholesterol(150-200), blood_sugar(70-140), oxygen_saturation(95-100)]).
+disease(malaria, [fever, chills, headache, nausea, vomiting, muscle_pain, fatigue, age(0-100), gender(any), weight(10-120), height(50-200), medical_history(none), lifestyle([non_smoker]), travel_history(tropical), diet([balanced, unbalanced]), bp(90-120), heart_rate(60-100), cholesterol(150-200), blood_sugar(70-140), oxygen_saturation(95-100)]).
+disease(tuberculosis, [persistent_cough, chest_pain, coughing_up_blood, fatigue, weight_loss, fever, night_sweats, age(0-100), gender(any), weight(10-120), height(50-200), medical_history(none), lifestyle([smoker]), travel_history(none), diet([unbalanced, unbalanced]), bp(90-120), heart_rate(60-100), cholesterol(150-200), blood_sugar(70-140), oxygen_saturation(95-100)]).
+disease(covid19, [fever, cough, shortness_of_breath, fatigue, muscle_pain, loss_of_taste_or_smell, sore_throat, age(0-100), gender(any), weight(10-120), height(50-200), medical_history(none), lifestyle([non_smoker]), travel_history(recent), diet([balanced, unbalanced]), bp(90-120), heart_rate(60-100), cholesterol(150-200), blood_sugar(70-140), oxygen_saturation(95-100)]).
+disease(hypertension, [headache, dizziness, blurred_vision, chest_pain, shortness_of_breath, age(0-100), gender(any), weight(10-120), height(50-200), medical_history(none), lifestyle([smoker]), travel_history(none), diet([unbalanced, unbalanced]), bp(120-180), heart_rate(60-100), cholesterol(200-300), blood_sugar(70-140), oxygen_saturation(95-100)]).
+disease(diabetes, [increased_thirst, frequent_urination, extreme_hunger, unexplained_weight_loss, fatigue, blurred_vision, age(0-100), gender(any), weight(10-120), height(50-200), medical_history(diabetes), lifestyle([non_smoker]), travel_history(none), diet([high_carbs]), bp(90-120), heart_rate(60-100), cholesterol(150-200), blood_sugar(140-200), oxygen_saturation(95-100)]).
+disease(asthma, [shortness_of_breath, chest_tightness, wheezing, coughing, age(0-100), gender(any), weight(10-120), height(50-200), medical_history(asthma), lifestyle([non_smoker]), travel_history(none), diet([balanced]), bp(90-120), heart_rate(60-100), cholesterol(150-200), blood_sugar(70-140), oxygen_saturation(90-100)]). 
+disease(pneumonia, [cough, fever, chills, shortness_of_breath, chest_pain, fatigue, age(0-100), gender(any), weight(10-120), height(50-200), medical_history(none), lifestyle([non_smoker]), travel_history(none), diet([balanced]), bp(90-120), heart_rate(60-100), cholesterol(150-200), blood_sugar(70-140), oxygen_saturation(90-100)]). 
+disease(hepatitis_b, [fatigue, nausea, vomiting, abdominal_pain, dark_urine, jaundice, age(0-100), gender(any), weight(10-120), height(50-200), medical_history(none), lifestyle([non_smoker]), travel_history(none), diet([balanced]), bp(90-120), heart_rate(60-100), cholesterol(150-200), blood_sugar(70-140), oxygen_saturation(95-100)]).
+
+% Predicate to diagnose disease based on symptoms and patient history
+diagnose(Disease, SymptomsAndHistory) :- 
+    disease(Disease, DiseaseSymptomsAndHistory), 
+    subset(SymptomsAndHistory, DiseaseSymptomsAndHistory).
+
+% Predicate to check if all elements of one list are in another list
+subset([], _).
+subset([age(Age)|T], List) :- 
+    member(age(Min-Max), List), 
+    Age >= Min, Age =< Max, 
+    subset(T, List).
+subset([gender(Gender)|T], List) :- 
+    (member(gender(Gender), List); member(gender(any), List)), 
+    subset(T, List).
+subset([weight(Weight)|T], List) :- 
+    member(weight(Min-Max), List), 
+    Weight >= Min, Weight =< Max, 
+    subset(T, List).
+subset([height(Height)|T], List) :- 
+    member(height(Min-Max), List), 
+    Height >= Min, Height =< Max, 
+    subset(T, List).
+subset([medical_history(History)|T], List) :- 
+    member(medical_history(History), List), 
+    subset(T, List).
+subset([lifestyle(Lifestyle)|T], List) :- 
+    member(lifestyle(L), List), 
+    subset(Lifestyle, L), 
+    subset(T, List).
+subset([travel_history(Travel)|T], List) :- 
+    member(travel_history(Travel), List), 
+    subset(T, List).
+subset([diet(Diet)|T], List) :- 
+    member(diet(D), List), 
+    subset(Diet, D), 
+    subset(T, List).
+subset([bp(BP)|T], List) :- 
+    member(bp(Min-Max), List), 
+    BP >= Min, BP =< Max, 
+    subset(T, List).
+subset([heart_rate(HeartRate)|T], List) :- 
+    member(heart_rate(Min-Max), List), 
+    HeartRate >= Min, HeartRate =< Max, 
+    subset(T, List).
+subset([cholesterol(Cholesterol)|T], List) :- 
+    member(cholesterol(Min-Max), List), 
+    Cholesterol >= Min, Cholesterol =< Max, 
+    subset(T, List).
+subset([blood_sugar(BloodSugar)|T], List) :- 
+    member(blood_sugar(Min-Max), List), 
+    BloodSugar >= Min, BloodSugar =< Max, 
+    subset(T, List).
+subset([oxygen_saturation(OxygenSaturation)|T], List) :- 
+    member(oxygen_saturation(Min-Max), List), 
+    OxygenSaturation >= Min, OxygenSaturation =< Max, 
+    subset(T, List).
+subset([H|T], List) :- 
+    member(H, List), 
+    subset(T, List).
+
+% Main entry point
+main :- 
+    (diagnose(Disease, [fever, low_platelet, age(20), gender(any), weight(75), height(175), medical_history(none), lifestyle([non_smoker]), travel_history(tropical), diet([unbalanced]), bp(110), heart_rate(80), cholesterol(180), blood_sugar(100), oxygen_saturation(98)]) -> 
+    write('Disease: '), write(Disease), nl ; 
+    write('No diagnosis. '), nl).
