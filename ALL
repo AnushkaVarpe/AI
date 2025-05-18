@@ -639,138 +639,139 @@ int main() {
 
 //a o star
 #include <stdio.h>
-#include <stdlib.h>
+#include <limits.h>
 
 #define MAX_NODES 20
-#define INF 1000000
+#define MAX_CHILDREN 10
+#define MAX_GROUPS 10
 
-typedef struct Node {
+typedef struct {
     char name;
-    int h;                    // heuristic value
-    int childCount;
-    int type;                 // 0=OR, 1=AND
-    int children[MAX_NODES];
+    int heuristic;
+    int cost;
+    int solved;
+
+    int childGroupCount;
+    int childCount[MAX_GROUPS];
+    int children[MAX_GROUPS][MAX_CHILDREN]; 
 } Node;
 
-int n;
 Node nodes[MAX_NODES];
-int cost[MAX_NODES];          // updated costs
-int solved[MAX_NODES];        // solved flags
-int bestChildForOR[MAX_NODES]; // best child for OR nodes, -1 if none
+int nodeCount = 0;
 
-int charToIndex(char c) {
-    return c - 'A';
-}
-
-char indexToChar(int i) {
-    return 'A' + i;
-}
-
-// AO* recursive evaluation
-int AOstar(int node) {
-    if (nodes[node].childCount == 0) {
-        cost[node] = nodes[node].h;
-        solved[node] = 1;
-        bestChildForOR[node] = -1;
-        return cost[node];
+int addNode(char name, int heuristic) {
+    if (nodeCount >= MAX_NODES) {
+        printf("Max nodes reached!\n");
+        return -1;
     }
-
-    if (nodes[node].type == 0) { // OR node
-        int minCost = INF;
-        int bestChild = -1;
-        for (int i = 0; i < nodes[node].childCount; i++) {
-            int c = AOstar(nodes[node].children[i]);
-            int f = 1 + c; // edge cost = 1
-            if (f < minCost) {
-                minCost = f;
-                bestChild = nodes[node].children[i];
-            }
-        }
-        cost[node] = nodes[node].h + minCost;
-        solved[node] = 1;
-        bestChildForOR[node] = bestChild;
-        return cost[node];
-    } else { // AND node
-        int sum = 0;
-        for (int i = 0; i < nodes[node].childCount; i++) {
-            int c = AOstar(nodes[node].children[i]);
-            sum += (1 + c); // edge cost + child's cost
-        }
-        cost[node] = nodes[node].h + sum;
-        solved[node] = 1;
-        bestChildForOR[node] = -1;
-        return cost[node];
-    }
+    nodes[nodeCount].name = name;
+    nodes[nodeCount].heuristic = heuristic;
+    nodes[nodeCount].cost = heuristic;
+    nodes[nodeCount].solved = 0;
+    nodes[nodeCount].childGroupCount = 0;
+    return nodeCount++;
 }
 
-// Print path for node
-void printPath(int node) {
-    printf("%c", indexToChar(node));
-    if (nodes[node].childCount == 0)
+void addChildGroup(int parentIndex, int childrenIndices[], int count) {
+    Node *parent = &nodes[parentIndex];
+    int idx = parent->childGroupCount++;
+    for (int i = 0; i < count; i++) {
+        parent->children[idx][i] = childrenIndices[i];
+    }
+    parent->childCount[idx] = count;
+}
+
+void ao(int nodeIndex) {
+    Node *node = &nodes[nodeIndex];
+    if (node->solved) return;
+
+    if (node->childGroupCount == 0) {
+        node->cost = node->heuristic;
+        node->solved = 1;
         return;
+    }
 
-    if (nodes[node].type == 0) {
-        // OR node: follow best child only
-        int child = bestChildForOR[node];
-        printf("->");
-        printPath(child);
-    } else {
-        // AND node: print all children in parentheses
-        printf("->(");
-        for (int i = 0; i < nodes[node].childCount; i++) {
-            printPath(nodes[node].children[i]);
-            if (i < nodes[node].childCount - 1)
-                printf(", ");
+    int minCost = INT_MAX;
+    int bestGroup = -1;
+
+    for (int i = 0; i < node->childGroupCount; i++) {
+        int groupCost = 0;
+        int allSolved = 1;
+        for (int j = 0; j < node->childCount[i]; j++) {
+            int childIdx = node->children[i][j];
+            if (!nodes[childIdx].solved) ao(childIdx);
+            if (!nodes[childIdx].solved) allSolved = 0;
+            groupCost += nodes[childIdx].cost;
         }
-        printf(")");
+        groupCost += node->heuristic;
+        if (groupCost < minCost) {
+            minCost = groupCost;
+            bestGroup = i;
+        }
+    }
+
+    node->cost = minCost;
+
+    node->solved = 1;
+    for (int j = 0; j < node->childCount[bestGroup]; j++) {
+        if (!nodes[node->children[bestGroup][j]].solved) {
+            node->solved = 0;
+            break;
+        }
+    }
+}
+
+void printSolution(int nodeIndex, int depth) {
+    for (int i = 0; i < depth; i++) printf("  ");
+    printf("%c (cost=%d)\n", nodes[nodeIndex].name, nodes[nodeIndex].cost);
+
+    Node *node = &nodes[nodeIndex];
+    if (node->childGroupCount == 0) return;
+
+    int minCost = INT_MAX;
+    int bestGroup = -1;
+
+    for (int i = 0; i < node->childGroupCount; i++) {
+        int groupCost = 0;
+        for (int j = 0; j < node->childCount[i]; j++) {
+            groupCost += nodes[node->children[i][j]].cost;
+        }
+        groupCost += node->heuristic;
+
+        if (groupCost < minCost) {
+            minCost = groupCost;
+            bestGroup = i;
+        }
+    }
+
+    for (int j = 0; j < node->childCount[bestGroup]; j++) {
+        printSolution(node->children[bestGroup][j], depth + 1);
     }
 }
 
 int main() {
-    printf("Enter number of nodes (max %d): ", MAX_NODES);
-    scanf("%d", &n);
-    if (n > MAX_NODES || n <= 0) {
-        printf("Invalid number of nodes.\n");
-        return 1;
-    }
+    int S = addNode('S', 0);
+    int A = addNode('A', 7);
+    int B = addNode('B', 12);
+    int C = addNode('C', 17);
+    int D = addNode('D', 2);
+    int E = addNode('E', 6);
+    int F = addNode('F', 5);
+    int G = addNode('G', 7);
 
-    printf("Enter heuristic values for nodes A to %c:\n", 'A' + n - 1);
-    for (int i = 0; i < n; i++) {
-        scanf("%d", &nodes[i].h);
-        nodes[i].name = indexToChar(i);
-        solved[i] = 0;
-        cost[i] = INF;
-        bestChildForOR[i] = -1;
-    }
+    int groupS1[] = {A, B};
+    int groupS2[] = {C};
+    addChildGroup(S, groupS1, 2);
+    addChildGroup(S, groupS2, 1);
 
-    printf("For each node, enter number of children and type (0=OR, 1=AND):\n");
-    for (int i = 0; i < n; i++) {
-        printf("Node %c: ", indexToChar(i));
-        scanf("%d %d", &nodes[i].childCount, &nodes[i].type);
-        for (int j = 0; j < nodes[i].childCount; j++) {
-            char c;
-            scanf(" %c", &c);
-            int idx = charToIndex(c);
-            if (idx < 0 || idx >= n) {
-                printf("Invalid child node %c\n", c);
-                return 1;
-            }
-            nodes[i].children[j] = idx;
-        }
-    }
+    int groupA1[] = {D, E};
+    addChildGroup(A, groupA1, 2);
 
-    char startNodeChar;
-    printf("Enter start node (A-%c): ", 'A' + n - 1);
-    scanf(" %c", &startNodeChar);
-    int startNode = charToIndex(startNodeChar);
+    int groupC1[] = {F, G};
+    addChildGroup(C, groupC1, 2);
 
-    int minCost = AOstar(startNode);
-
-    printf("AO* algorithm completed.\n");
-    printf("Minimum cost from %c is %d\n", startNodeChar, minCost);
-    printf("Optimal path is: ");
-    printPath(startNode);
-    printf("\n");
+    ao(S);
+    printSolution(S, 0);
 
     return 0;
 }
