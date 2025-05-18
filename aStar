@@ -1,0 +1,103 @@
+#include <stdio.h> 
+#define SIZE 10 
+#define INF 9999 
+int G[SIZE][SIZE]; 
+int queue[SIZE]; 
+int front = -1, rear = -1; 
+void enqueue(int v) { 
+    if (front == -1) front = 0; 
+    queue[++rear] = v; 
+}  
+int dequeue() { 
+    return queue[front++]; 
+} 
+int emptyQueue() { 
+    return (front == -1 || front > rear); 
+} 
+void astar(int G[SIZE][SIZE], int start, int target, int visited[], int v,  
+  int heuristic[]) { 
+    int g[SIZE], f[SIZE], parent[SIZE]; 
+    for (int i = 0; i < v; i++) { 
+        g[i] = INF;  
+        f[i] = INF; 
+        parent[i] = -1; 
+    } 
+    g[start] = 0; 
+    f[start] = heuristic[start]; 
+    enqueue(start); 
+    while (!emptyQueue()) { 
+        int current = queue[front]; 
+        int minF = f[current], minIndex = front; 
+        for (int i = front; i <= rear; i++) { 
+            if (f[queue[i]] < minF) { 
+                minF = f[queue[i]]; 
+                current = queue[i]; 
+                minIndex = i; 
+            } 
+        } 
+        for (int i = minIndex; i < rear; i++) { 
+            queue[i] = queue[i + 1]; 
+        } 
+        rear--; 
+        if (current == target) { 
+            printf("\nPath found: "); 
+            int pathNode = target; 
+            while (pathNode != -1) { 
+                printf("%d ", pathNode); 
+                pathNode = parent[pathNode]; 
+            } 
+            printf("\nTotal cost: %d\n", g[target]); 
+            return; 
+        } 
+        visited[current] = 1; 
+        for (int neighbor = 0; neighbor < v; neighbor++) { 
+            if (G[current][neighbor] != 0 && !visited[neighbor]) { 
+                int tentativeG = g[current] + G[current][neighbor]; 
+                if (tentativeG < g[neighbor]) { 
+                    g[neighbor] = tentativeG; 
+                    f[neighbor] = tentativeG + heuristic[neighbor]; 
+                    parent[neighbor] = current; 
+                    int inQueue = 0; 
+                    for (int i = front; i <= rear; i++) { 
+                        if (queue[i] == neighbor) { 
+                            inQueue = 1; 
+                            break;  
+                        } 
+                    } 
+                    if (!inQueue) enqueue(neighbor); 
+                } 
+            } 
+        } 
+    } 
+    printf("\nNo path found to target.\n"); 
+} 
+int main() { 
+    int v, e, u, w, h, visited[SIZE], heuristic[SIZE]; 
+    int start, target; 
+    printf("Enter the number of vertices: "); 
+    scanf("%d", &v); 
+    for (int i = 0; i < SIZE; i++) { 
+        for (int j = 0; j < SIZE; j++) G[i][j] = 0; 
+        visited[i] = 0; 
+    } 
+    printf("Enter the number of edges: "); 
+    scanf("%d", &e); 
+    for (int i = 0; i < e; i++) { 
+        printf("Enter edge %d (u v weight): ", i + 1); 
+        scanf("%d %d %d", &u, &w, &h); 
+        G[u][w] = h; 
+        G[w][u] = h; 
+    } 
+    printf("Enter heuristic values for each vertex:\n"); 
+    for (int i = 0; i < v; i++) {  
+        printf("Heuristic for vertex %d: ", i); 
+        scanf("%d", &heuristic[i]); 
+    } 
+    printf("Enter start node: "); 
+    scanf("%d", &start); 
+    printf("Enter target node: "); 
+    scanf("%d", &target);  
+    printf("\nA* SEARCH:"); 
+    astar(G, start, target, visited, v, heuristic); 
+    return 0; 
+} 
