@@ -1,0 +1,776 @@
+//BFS
+#include<stdio.h>
+#include<stdlib.h>
+#define SIZE 100
+int front=-1;
+int rear=-1;
+int visited[SIZE], queue[SIZE];
+void enqueue(int val){
+  if(rear==SIZE-1){
+    return;
+  }
+  queue[++rear]=val;
+  if(front==-1){
+    front=0;
+  }
+}
+
+int dequeue(){
+  if(front==-1 || front>rear){
+    return -1;
+  }
+  int val=queue[front++];
+  return val;
+}
+
+void bfs(int graph[SIZE][SIZE],int n, int start){
+  for(int i=0;i<n;i++){
+    visited[i]=0;
+  }
+  enqueue(start);
+  visited[start]=1;
+  while(front<=rear){
+    int node=dequeue();
+    printf("%d ",node);
+    for(int i=0;i<n;i++){
+      if(graph[node][i]&& !visited[i]){
+        enqueue(i);
+        visited[i]=1;
+      }
+    }
+  }
+}
+
+int main() {
+    int graph[SIZE][SIZE], n, start;
+    printf("Enter the number of vertices: ");
+    scanf("%d", &n);
+    printf("Enter the adjacency matrix:\n");
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &graph[i][j]);
+        }
+    }
+    printf("Enter the starting vertex (0 to %d): ", n - 1);
+    scanf("%d", &start);
+    printf("BFS traversal: ");
+    bfs(graph, n, start);
+    printf("\n");
+
+    return 0;
+}
+
+//DFS
+#include<stdio.h>
+#include<stdlib.h>
+#define SIZE 100
+int top=-1;
+int visited[SIZE], stack[SIZE];
+
+void push(int num){
+  if(top==SIZE-1){
+    return;
+  }
+  stack[++top]=num;
+}
+
+int pop(){
+  if(top==-1){
+    return -1;
+  }
+  return stack[top--];
+}
+
+void dfs_rec(int graph[SIZE][SIZE], int n, int node) {
+    visited[node] = 1;
+    printf("%d ", node);
+    for (int i = 0; i < n; i++) {
+        if (graph[node][i] && !visited[i]) {
+            dfs_rec(graph, n, i);
+        }
+    }
+}
+
+void dfs(int graph[SIZE][SIZE], int n, int start){
+  for (int i = 0; i < n; i++) {
+    visited[i]=0;
+  }
+  push(start);
+  while(top!=-1){
+    int node=pop();
+    if(!visited[node]){
+      visited[node]=1;
+      printf("%d ",node);
+      for(int i=n-1;i>=0;i--){
+        if(!visited[i] && graph[node][i]){
+          push(i);
+        }
+      }
+    }
+  }
+}
+
+int main() {
+    int graph[SIZE][SIZE], n, start;
+    printf("Enter the number of vertices: ");
+    scanf("%d", &n);
+    printf("Enter the adjacency matrix:\n");
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &graph[i][j]);
+        }
+    }
+    printf("Enter the starting vertex (0 to %d): ", n - 1);
+    scanf("%d", &start);
+    printf("DFS traversal: ");
+    dfs_rec(graph, n, start);
+    printf("\n");
+    return 0;
+}
+
+//expert system
+:- initialization(main).
+
+% Symptoms 
+symptom(leaf_spots). 
+symptom(yellow_leaves). 
+symptom(wilting). 
+symptom(powdery_substance). 
+symptom(leaf_curling). 
+
+% Environmental Conditions 
+environment(high_humidity). 
+environment(poor_airflow). 
+environment(overwatering). 
+
+% Knowledge Base
+has_symptom(tulsi, powdery_substance). 
+has_symptom(tulsi, leaf_spots). 
+has_symptom(rose, wilting). 
+has_symptom(rose, yellow_leaves). 
+has_symptom(mango, leaf_curling). 
+has_symptom(mango, yellow_leaves). 
+has_symptom(basil, leaf_spots). 
+has_symptom(basil, yellow_leaves). 
+has_environment(tulsi, high_humidity). 
+has_environment(rose, overwatering). 
+has_environment(basil, poor_airflow). 
+
+% Disease Rules 
+at_risk_of_fungal_disease(Plant) :- 
+    has_symptom(Plant, powdery_substance), 
+    has_symptom(Plant, leaf_spots), 
+    has_environment(Plant, high_humidity). 
+
+at_risk_of_bacterial_disease(Plant) :- 
+    has_symptom(Plant, wilting), 
+    has_symptom(Plant, yellow_leaves), 
+    has_environment(Plant, overwatering). 
+
+at_risk_of_viral_disease(Plant) :- 
+    has_symptom(Plant, leaf_curling), 
+    has_symptom(Plant, yellow_leaves), 
+    \+ has_environment(Plant, overwatering). 
+
+% Diagnostic Predicate 
+check_plant_disease(Plant) :- 
+    at_risk_of_fungal_disease(Plant), 
+    write(Plant), write(' is at risk of fungal disease.'), nl. 
+
+check_plant_disease(Plant) :- 
+    at_risk_of_bacterial_disease(Plant), 
+    write(Plant), write(' is at risk of bacterial disease.'), nl. 
+
+check_plant_disease(Plant) :- 
+    at_risk_of_viral_disease(Plant), 
+    write(Plant), write(' is at risk of viral disease.'), nl. 
+
+check_plant_disease(Plant) :- 
+    \+ at_risk_of_fungal_disease(Plant), 
+    \+ at_risk_of_bacterial_disease(Plant), 
+    \+ at_risk_of_viral_disease(Plant), 
+    write(Plant), write(' shows no sign of serious disease.'), nl.
+
+main :- 
+    check_plant_disease(tulsi), 
+    check_plant_disease(rose), 
+    check_plant_disease(mango), 
+    check_plant_disease(basil).
+
+
+//graph
+#include <stdio.h>
+
+#define MAX 10
+
+int V;
+int graphColor[MAX][MAX];
+int color[MAX];
+
+int isSafeColor(int v, int c) {
+    for (int i = 0; i < V; i++) {
+        if (graphColor[v][i] && color[i] == c)
+            return 0;
+    }
+    return 1;
+}
+
+int graphColoring(int v, int m) {
+    if (v == V)
+        return 1;
+
+    for (int c = 1; c <= m; c++) {
+        if (isSafeColor(v, c)) {
+            color[v] = c;
+
+            if (graphColoring(v + 1, m))
+                return 1;
+
+            color[v] = 0;
+        }
+    }
+    return 0;
+}
+
+void printColors() {
+    printf("Solution exists. Assigned colors:\n");
+    for (int i = 0; i < V; i++)
+        printf("Vertex %d ---> Color %d\n", i, color[i]);
+}
+
+int main() {
+    int m;
+
+    printf("Enter the number of vertices (max 10): ");
+    scanf("%d", &V);
+
+    printf("Enter adjacency matrix (0 or 1) row-wise:\n");
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            scanf("%d", &graphColor[i][j]);
+        }
+    }
+
+    printf("Enter the number of colors: ");
+    scanf("%d", &m);
+
+    for (int i = 0; i < V; i++)
+        color[i] = 0;
+
+    if (graphColoring(0, m))
+        printColors();
+    else
+        printf("Solution does not exist with %d colors.\n", m);
+
+    return 0;
+}
+
+//nqueens
+#include <stdio.h>
+#define MAX 20
+
+// Function to display one valid board configuration
+void display(int board[MAX][MAX], int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (board[i][j] == 1)
+                printf("Q ");
+            else
+                printf("_ ");
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+// Function to check if a queen can be placed at board[row][col]
+int isSafe(int board[MAX][MAX], int row, int col, int n) {
+    int i, j;
+
+    // Check column above
+    for (i = 0; i < row; i++) {
+        if (board[i][col] == 1)
+            return 0;
+    }
+
+    // Check upper-left diagonal
+    for (i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
+        if (board[i][j] == 1)
+            return 0;
+    }
+
+    // Check upper-right diagonal
+    for (i = row - 1, j = col + 1; i >= 0 && j < n; i--, j++) {
+        if (board[i][j] == 1)
+            return 0;
+    }
+
+    return 1;
+}
+
+// Recursive function to solve N-Queens
+int solution(int board[MAX][MAX], int row, int n) {
+    int count = 0;
+
+    if (row == n) {
+        display(board, n);
+        return 1;
+    }
+
+    for (int col = 0; col < n; col++) {
+        if (isSafe(board, row, col, n)) {
+            board[row][col] = 1;
+            count += solution(board, row + 1, n);
+            board[row][col] = 0; // backtrack
+        }
+    }
+
+    return count;
+}
+
+int main() {
+    int board[MAX][MAX], n, totalSolutions;
+
+    printf("Enter the value of N (size of the board): ");
+    scanf("%d", &n);
+
+    if (n <= 0 || n > MAX) {
+        printf("Invalid value of N. Please enter a value between 1 and %d.\n", MAX);
+        return 1;
+    }
+
+    // Initialize the board with 0
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            board[i][j] = 0;
+        }
+    }
+    printf("\n");
+    totalSolutions = solution(board, 0, n);
+    printf("Total possible solutions for %d-Queens: %d\n", n, totalSolutions);
+
+    return 0;
+}
+
+//tic tac toe
+#include<stdio.h>
+#include<stdlib.h>
+#define PLAYER 'X'
+#define AI 'O'
+char board[3][3];
+
+void initializeBoard() {
+    for(int i = 0; i < 3; i++) {
+        for(int j = 0; j < 3; j++) {
+            board[i][j] = ' ';
+        }
+    }
+}
+
+int isBoardFull() {
+    for(int i = 0; i < 3; i++) {
+        for(int j = 0; j < 3; j++) {
+            if(board[i][j] == ' ') {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+void printBoard() { 
+    printf("\n"); 
+    printf(" %c | %c | %c \n", board[0][0], board[0][1], board[0][2]); 
+    printf("---|---|---\n"); 
+    printf(" %c | %c | %c \n", board[1][0], board[1][1], board[1][2]); 
+    printf("---|---|---\n"); 
+    printf(" %c | %c | %c \n\n", board[2][0], board[2][1], board[2][2]); 
+} 
+
+char checkWinner(){
+    for (int i = 0; i < 3; i++) { 
+        if (board[i][0] == board[i][1] && 
+            board[i][1] == board[i][2] && 
+            board[i][0] != ' ') 
+            return board[i][0]; 
+        if (board[0][i] == board[1][i] && 
+            board[1][i] == board[2][i] && 
+            board[0][i] != ' ') 
+            return board[0][i]; 
+    } 
+    if (board[0][0] == board[1][1] && 
+        board[1][1] == board[2][2] && 
+        board[0][0] != ' ') 
+        return board[0][0]; 
+    if (board[0][2] == board[1][1] && 
+        board[1][1] == board[2][0] && 
+        board[0][2] != ' ') 
+        return board[0][2]; 
+    return ' '; 
+}
+
+void playPvPGame() {
+    int row, col; 
+    char currentPlayer = PLAYER; 
+    char winner; 
+    initializeBoard(); 
+    printBoard();
+    while (1) {
+        printf("Player %c's turn. Enter row and column (0-2): ", currentPlayer); 
+        scanf("%d %d", &row, &col); 
+        if (row < 0 || row > 2 || col < 0 || col > 2 || board[row][col] != ' ') { 
+            printf("Invalid move! Try again.\n"); 
+            continue; 
+        } 
+        board[row][col] = currentPlayer; 
+        printBoard(); 
+        winner = checkWinner(); 
+        if (winner != ' ') { 
+            printf("Player %c wins!\n", winner); 
+            break; 
+        } 
+        if (isBoardFull()) { 
+            printf("It's a draw!\n"); 
+            break; 
+        } 
+        currentPlayer = (currentPlayer == PLAYER) ? AI : PLAYER; 
+    } 
+}
+
+int minimax(int depth, int isMaximizing) { 
+    char winner = checkWinner(); 
+    if (winner == AI) return 10 - depth;  
+    if (winner == PLAYER) return depth - 10; 
+    if (isBoardFull()) return 0; 
+    int bestScore = isMaximizing ? -1000 : 1000; 
+    for (int i = 0; i < 3; i++) { 
+        for (int j = 0; j < 3; j++) { 
+            if (board[i][j] == ' ') { 
+                board[i][j] = isMaximizing ? AI : PLAYER; 
+                int score = minimax(depth + 1, !isMaximizing); 
+                board[i][j] = ' '; 
+                bestScore = isMaximizing 
+                    ? (score > bestScore ? score : bestScore) 
+                    : (score < bestScore ? score : bestScore); 
+            } 
+        } 
+    } 
+    return bestScore; 
+} 
+void aiMove() { 
+    int bestScore = -1000, bestRow = -1, bestCol = -1; 
+    for (int i = 0; i < 3; i++) { 
+        for (int j = 0; j < 3; j++) { 
+            if (board[i][j] == ' ') { 
+                board[i][j] = AI; 
+                int score = minimax(0, 0); 
+                board[i][j] = ' '; 
+                if (score > bestScore) { 
+                    bestScore = score; 
+                    bestRow = i; 
+                    bestCol = j; 
+                } 
+            } 
+        } 
+    } 
+    board[bestRow][bestCol] = AI; 
+} 
+int playerMove() { 
+    int row, col;
+    int attempts = 5;
+    while (attempts--) { 
+        printf("Enter your move (row and column: 0 1 2): "); 
+        if (scanf("%d %d", &row, &col) != 2) {
+            printf("Invalid input! Expected two integers.\n");
+            while (getchar() != '\n');
+            continue;
+        }
+        if (row >= 0 && row < 3 && col >= 0 && col < 3 && board[row][col] == ' ') { 
+            board[row][col] = PLAYER; 
+            return 1; 
+        } else { 
+            printf("Invalid move! Try again.\n"); 
+        } 
+    } 
+    printf("Too many invalid attempts. Exiting game.\n");
+    return 0;
+}
+
+void playAIGame() { 
+    char winner; 
+    initializeBoard(); 
+    printBoard(); 
+    while (1) { 
+        playerMove(); 
+        printBoard(); 
+        winner = checkWinner(); 
+        if (winner == PLAYER) { 
+            printf("You win!\n"); 
+            break; 
+        } 
+        if (isBoardFull()) { 
+            printf("It's a draw!\n"); 
+            break; 
+        } 
+        printf("AI is thinking...\n"); 
+        aiMove(); 
+        printBoard(); 
+        winner = checkWinner(); 
+        if (winner == AI) { 
+            printf("AI wins!\n"); 
+            break; 
+        } 
+        if (isBoardFull()) { 
+            printf("It's a draw!\n"); 
+            break; 
+        } 
+    } 
+} 
+int main() { 
+        //playPvPGame();
+        playAIGame(); 
+    return 0; 
+} 
+
+
+//a star
+#include <stdio.h> 
+#define SIZE 10 
+#define INF 9999 
+int G[SIZE][SIZE]; 
+int queue[SIZE]; 
+int front = -1, rear = -1; 
+void enqueue(int v) { 
+    if (front == -1) front = 0; 
+    queue[++rear] = v; 
+}  
+int dequeue() { 
+    return queue[front++]; 
+} 
+int emptyQueue() { 
+    return (front == -1 || front > rear); 
+} 
+void astar(int G[SIZE][SIZE], int start, int target, int visited[], int v,  
+  int heuristic[]) { 
+    int g[SIZE], f[SIZE], parent[SIZE]; 
+    for (int i = 0; i < v; i++) { 
+        g[i] = INF;  
+        f[i] = INF; 
+        parent[i] = -1; 
+    } 
+    g[start] = 0; 
+    f[start] = heuristic[start]; 
+    enqueue(start); 
+    while (!emptyQueue()) { 
+        int current = queue[front]; 
+        int minF = f[current], minIndex = front; 
+        for (int i = front; i <= rear; i++) { 
+            if (f[queue[i]] < minF) { 
+                minF = f[queue[i]]; 
+                current = queue[i]; 
+                minIndex = i; 
+            } 
+        } 
+        for (int i = minIndex; i < rear; i++) { 
+            queue[i] = queue[i + 1]; 
+        } 
+        rear--; 
+        if (current == target) { 
+            printf("\nPath found: "); 
+            int pathNode = target; 
+            while (pathNode != -1) { 
+                printf("%d ", pathNode); 
+                pathNode = parent[pathNode]; 
+            } 
+            printf("\nTotal cost: %d\n", g[target]); 
+            return; 
+        } 
+        visited[current] = 1; 
+        for (int neighbor = 0; neighbor < v; neighbor++) { 
+            if (G[current][neighbor] != 0 && !visited[neighbor]) { 
+                int tentativeG = g[current] + G[current][neighbor]; 
+                if (tentativeG < g[neighbor]) { 
+                    g[neighbor] = tentativeG; 
+                    f[neighbor] = tentativeG + heuristic[neighbor]; 
+                    parent[neighbor] = current; 
+                    int inQueue = 0; 
+                    for (int i = front; i <= rear; i++) { 
+                        if (queue[i] == neighbor) { 
+                            inQueue = 1; 
+                            break;  
+                        } 
+                    } 
+                    if (!inQueue) enqueue(neighbor); 
+                } 
+            } 
+        } 
+    } 
+    printf("\nNo path found to target.\n"); 
+} 
+int main() { 
+    int v, e, u, w, h, visited[SIZE], heuristic[SIZE]; 
+    int start, target; 
+    printf("Enter the number of vertices: "); 
+    scanf("%d", &v); 
+    for (int i = 0; i < SIZE; i++) { 
+        for (int j = 0; j < SIZE; j++) G[i][j] = 0; 
+        visited[i] = 0; 
+    } 
+    printf("Enter the number of edges: "); 
+    scanf("%d", &e); 
+    for (int i = 0; i < e; i++) { 
+        printf("Enter edge %d (u v weight): ", i + 1); 
+        scanf("%d %d %d", &u, &w, &h); 
+        G[u][w] = h; 
+        G[w][u] = h; 
+    } 
+    printf("Enter heuristic values for each vertex:\n"); 
+    for (int i = 0; i < v; i++) {  
+        printf("Heuristic for vertex %d: ", i); 
+        scanf("%d", &heuristic[i]); 
+    } 
+    printf("Enter start node: "); 
+    scanf("%d", &start); 
+    printf("Enter target node: "); 
+    scanf("%d", &target);  
+    printf("\nA* SEARCH:"); 
+    astar(G, start, target, visited, v, heuristic); 
+    return 0; 
+} 
+
+//a o star
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_NODES 20
+#define INF 1000000
+
+typedef struct Node {
+    char name;
+    int h;                    // heuristic value
+    int childCount;
+    int type;                 // 0=OR, 1=AND
+    int children[MAX_NODES];
+} Node;
+
+int n;
+Node nodes[MAX_NODES];
+int cost[MAX_NODES];          // updated costs
+int solved[MAX_NODES];        // solved flags
+int bestChildForOR[MAX_NODES]; // best child for OR nodes, -1 if none
+
+int charToIndex(char c) {
+    return c - 'A';
+}
+
+char indexToChar(int i) {
+    return 'A' + i;
+}
+
+// AO* recursive evaluation
+int AOstar(int node) {
+    if (nodes[node].childCount == 0) {
+        cost[node] = nodes[node].h;
+        solved[node] = 1;
+        bestChildForOR[node] = -1;
+        return cost[node];
+    }
+
+    if (nodes[node].type == 0) { // OR node
+        int minCost = INF;
+        int bestChild = -1;
+        for (int i = 0; i < nodes[node].childCount; i++) {
+            int c = AOstar(nodes[node].children[i]);
+            int f = 1 + c; // edge cost = 1
+            if (f < minCost) {
+                minCost = f;
+                bestChild = nodes[node].children[i];
+            }
+        }
+        cost[node] = nodes[node].h + minCost;
+        solved[node] = 1;
+        bestChildForOR[node] = bestChild;
+        return cost[node];
+    } else { // AND node
+        int sum = 0;
+        for (int i = 0; i < nodes[node].childCount; i++) {
+            int c = AOstar(nodes[node].children[i]);
+            sum += (1 + c); // edge cost + child's cost
+        }
+        cost[node] = nodes[node].h + sum;
+        solved[node] = 1;
+        bestChildForOR[node] = -1;
+        return cost[node];
+    }
+}
+
+// Print path for node
+void printPath(int node) {
+    printf("%c", indexToChar(node));
+    if (nodes[node].childCount == 0)
+        return;
+
+    if (nodes[node].type == 0) {
+        // OR node: follow best child only
+        int child = bestChildForOR[node];
+        printf("->");
+        printPath(child);
+    } else {
+        // AND node: print all children in parentheses
+        printf("->(");
+        for (int i = 0; i < nodes[node].childCount; i++) {
+            printPath(nodes[node].children[i]);
+            if (i < nodes[node].childCount - 1)
+                printf(", ");
+        }
+        printf(")");
+    }
+}
+
+int main() {
+    printf("Enter number of nodes (max %d): ", MAX_NODES);
+    scanf("%d", &n);
+    if (n > MAX_NODES || n <= 0) {
+        printf("Invalid number of nodes.\n");
+        return 1;
+    }
+
+    printf("Enter heuristic values for nodes A to %c:\n", 'A' + n - 1);
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &nodes[i].h);
+        nodes[i].name = indexToChar(i);
+        solved[i] = 0;
+        cost[i] = INF;
+        bestChildForOR[i] = -1;
+    }
+
+    printf("For each node, enter number of children and type (0=OR, 1=AND):\n");
+    for (int i = 0; i < n; i++) {
+        printf("Node %c: ", indexToChar(i));
+        scanf("%d %d", &nodes[i].childCount, &nodes[i].type);
+        for (int j = 0; j < nodes[i].childCount; j++) {
+            char c;
+            scanf(" %c", &c);
+            int idx = charToIndex(c);
+            if (idx < 0 || idx >= n) {
+                printf("Invalid child node %c\n", c);
+                return 1;
+            }
+            nodes[i].children[j] = idx;
+        }
+    }
+
+    char startNodeChar;
+    printf("Enter start node (A-%c): ", 'A' + n - 1);
+    scanf(" %c", &startNodeChar);
+    int startNode = charToIndex(startNodeChar);
+
+    int minCost = AOstar(startNode);
+
+    printf("AO* algorithm completed.\n");
+    printf("Minimum cost from %c is %d\n", startNodeChar, minCost);
+    printf("Optimal path is: ");
+    printPath(startNode);
+    printf("\n");
+
+    return 0;
+}
