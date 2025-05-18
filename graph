@@ -1,0 +1,65 @@
+#include <stdio.h>
+
+#define MAX 10
+
+int V;
+int graphColor[MAX][MAX];
+int color[MAX];
+
+int isSafeColor(int v, int c) {
+    for (int i = 0; i < V; i++) {
+        if (graphColor[v][i] && color[i] == c)
+            return 0;
+    }
+    return 1;
+}
+
+int graphColoring(int v, int m) {
+    if (v == V)
+        return 1;
+
+    for (int c = 1; c <= m; c++) {
+        if (isSafeColor(v, c)) {
+            color[v] = c;
+
+            if (graphColoring(v + 1, m))
+                return 1;
+
+            color[v] = 0;
+        }
+    }
+    return 0;
+}
+
+void printColors() {
+    printf("Solution exists. Assigned colors:\n");
+    for (int i = 0; i < V; i++)
+        printf("Vertex %d ---> Color %d\n", i, color[i]);
+}
+
+int main() {
+    int m;
+
+    printf("Enter the number of vertices (max 10): ");
+    scanf("%d", &V);
+
+    printf("Enter adjacency matrix (0 or 1) row-wise:\n");
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            scanf("%d", &graphColor[i][j]);
+        }
+    }
+
+    printf("Enter the number of colors: ");
+    scanf("%d", &m);
+
+    for (int i = 0; i < V; i++)
+        color[i] = 0;
+
+    if (graphColoring(0, m))
+        printColors();
+    else
+        printf("Solution does not exist with %d colors.\n", m);
+
+    return 0;
+}
