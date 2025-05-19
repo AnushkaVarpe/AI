@@ -58,3 +58,21 @@ int main() {
 
     return 0;
 }
+
+
+✅ BFS – Advantages
+Guarantees shortest path in unweighted graphs
+
+Finds solution with least number of steps
+
+Useful when goal is close to the source
+
+❌ BFS – Disadvantages
+High memory usage (stores all children at each level)
+
+Slower in deep or large graphs
+Domain	Use Case
+Shortest Path:	GPS navigation, social networks, peer-to-peer networks
+Web Crawlers:	Explore pages layer-by-layer
+AI / Games:	Level-based search, finding minimum moves
+Network Broadcasting:	Spreading messages in minimum hops
