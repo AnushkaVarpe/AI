@@ -64,3 +64,25 @@ int main() {
     printf("\n");
     return 0;
 }
+
+
+✅ DFS – Advantages
+Lower memory usage
+
+Can reach deeper nodes faster
+
+Simple to implement (can use recursion)
+
+❌ DFS – Disadvantages
+Doesn’t guarantee shortest path
+
+May get stuck in deep or infinite paths
+
+Not suitable for cyclic or large graphs without proper checks
+🎯 Applications of DFS
+Domain	Use Case
+Topological Sort	Task scheduling, dependency resolution
+Cycle Detection	Detecting loops in graphs or deadlocks
+Maze Solving	Exploring all possible paths
+Connected Components	Finding all nodes in a cluster
+Backtracking Algorithms	Sudoku, N-Queens, permutations
