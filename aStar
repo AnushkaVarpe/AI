@@ -101,3 +101,32 @@ int main() {
     astar(G, start, target, visited, v, heuristic); 
     return 0; 
 } 
+
+
+
+A* (A-Star) Algorithm
+✅ Applications:
+Pathfinding in Games
+Used to find the shortest route between two points on a game map.
+Robotics Navigation
+Helps robots find optimal paths in dynamic environments.
+GPS & Mapping Software
+Computes the shortest or fastest route on road maps.
+Puzzle Solvers
+Solves puzzles like the 8-puzzle or 15-puzzle efficiently.
+Network Routing
+Finds optimal data paths in computer networks.
+➕ Pros:
+Optimal & Complete
+Finds the shortest path if the heuristic is admissible (never overestimates).
+Efficient
+Combines the advantages of Dijkstra’s and Greedy algorithms.
+Flexible
+Can be adapted for different heuristics and environments.
+➖ Cons:
+Memory Intensive
+Stores all visited nodes, leading to high space complexity.
+Performance Drops in Large Graphs
+May slow down if the search space is huge.
+Depends on Heuristic Quality
+A poor heuristic can degrade performance.
