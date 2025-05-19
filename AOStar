@@ -135,3 +135,31 @@ int main() {
 
     return 0;
 }
+
+
+AO* (And-Or Star) Algorithm
+✅ Applications:
+Problem Solving with Decision Trees
+Used where problems are solved by decomposing into subproblems.
+Planning & Scheduling System
+Efficient for hierarchical planning tasks.
+Expert Systems
+Useful in systems where decisions depend on multiple conditions.
+Non-deterministic Search Problems
+Handles AND/OR graphs well (e.g., troubleshooting systems).
+Automated Reasoning
+Helps in reasoning through complex logical decisions.
+➕ Pros:
+Handles AND/OR Structures
+Supports complex problem spaces where solutions depend on multiple sub-goals.
+Informed Search
+Uses heuristics to guide search, reducing time.
+Efficient in Hierarchical Systems
+Works well with tasks that can be broken into subtasks.
+➖ Cons:
+Complex Implementation
+More difficult to implement than simple pathfinding algorithms.
+Requires Accurate Heuristics
+Needs well-defined cost functions and heuristics for best performance.
+Limited Use Cases
+Best suited for specific structured problems (not general pathfinding).
